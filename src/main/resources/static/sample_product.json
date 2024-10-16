@@ -1,0 +1,10 @@
+[
+  {
+    "vendorId": 2,
+    "name": "Basketball",
+    "description": "Solid leather basketball",
+    "category": "SPORTS",
+    "basePrice": 350.00,
+    "isActive":  true
+  }
+]

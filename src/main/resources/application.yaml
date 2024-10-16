@@ -1,0 +1,19 @@
+server:
+  port: 8983
+
+spring:
+  application:
+    name: bidding_system
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/bidding_system
+    username: root
+    password: 170103029
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    show-sql: true
+#    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+
