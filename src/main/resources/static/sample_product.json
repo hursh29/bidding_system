@@ -1,10 +1,38 @@
 [
   {
     "vendorId": 2,
-    "name": "Basketball",
-    "description": "Solid leather basketball",
+    "name": "Foosebal",
+    "description": "abcd",
     "category": "SPORTS",
     "basePrice": 350.00,
-    "isActive":  true
+    "isActive":  true,
+    "slotId": 1
+  },
+  {
+    "vendorId": 1,
+    "name": "Cricket",
+    "description": "ejfa",
+    "category": "SPORTS",
+    "basePrice": 250.00,
+    "isActive":  true,
+    "slotId": 1
+  },
+  {
+    "vendorId": 2,
+    "name": "Hockey",
+    "description": "abcd",
+    "category": "SPORTS",
+    "basePrice": 99.23,
+    "isActive":  true,
+    "slotId": 1
+  },
+  {
+    "vendorId": 1,
+    "name": "Kho Kho",
+    "description": "abcd",
+    "category": "SPORTS",
+    "basePrice": 213.023,
+    "isActive":  true,
+    "slotId": 1
   }
 ]

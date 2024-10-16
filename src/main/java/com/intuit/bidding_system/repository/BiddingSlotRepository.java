@@ -12,7 +12,7 @@ public interface BiddingSlotRepository extends JpaRepository<BiddingSlot, Long> 
 
     Optional<BiddingSlot> findById(Long slotId);
 
-    Optional<BiddingSlot> findFirstBySlotStatusOrderByStartTime(SlotStatus status);
+    Optional<BiddingSlot> findFirstByStatusOrderByStartTime(SlotStatus status);
 
-    Optional<BiddingSlot> findFirstBySlotStatusOrderByEndTime(SlotStatus status);
+    Optional<BiddingSlot> findFirstByStatusOrderByEndTime(SlotStatus status);
 }

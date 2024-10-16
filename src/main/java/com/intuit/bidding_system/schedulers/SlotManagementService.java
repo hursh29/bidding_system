@@ -27,36 +27,43 @@ public class SlotManagementService {
     @Autowired
     private SlotClosingTask slotClosingTask;
 
-    private final Long TIME_GAP = Long.valueOf(60);
+    private final Long TIME_GAP = 60L;
 
-    @Scheduled(cron = "* * * * *")
+    @Scheduled(cron = "0 * * * * *")
     public void startBiddingSlot() {
-        final var scheduledSlot = biddingSlotRepository.findFirstBySlotStatusOrderByStartTime(SCHEDULED);
+        final var scheduledSlot = biddingSlotRepository.findFirstByStatusOrderByStartTime(SCHEDULED);
+
         final var startTimeGapWithCurrentTime = scheduledSlot
             .map(BiddingSlot::getStartTime)
             .map(startTime -> Duration.between(startTime, LocalDateTime.now()))
             .map(Duration::getSeconds)
-            .get();
-        final var slotId = scheduledSlot.map(BiddingSlot::getSlotId).get();
+            .map(Math::abs)
+            .orElse(TIME_GAP);
+        System.out.println(startTimeGapWithCurrentTime);
 
         if (startTimeGapWithCurrentTime < TIME_GAP) {
+            final var slotId = scheduledSlot.map(BiddingSlot::getSlotId).get();
+            System.out.println("Found one slot to open" + scheduledSlot.get().getSlotId());
             updateBiddingStatus(scheduledSlot.get(), ACTIVE);
 
             slotStartTask.invoke(slotId);
         }
     }
 
-    @Scheduled(cron = "* * * * *")
+    @Scheduled(cron = "0 * * * * *")
     public void closeBiddingSlot() {
-        final var scheduledSlot = biddingSlotRepository.findFirstBySlotStatusOrderByEndTime(ACTIVE);
+        final var scheduledSlot = biddingSlotRepository.findFirstByStatusOrderByEndTime(ACTIVE);
         final var endTimeGapWithCurrentTime = scheduledSlot
             .map(BiddingSlot::getEndTime)
             .map(endTime -> Duration.between(endTime, LocalDateTime.now()))
             .map(Duration::getSeconds)
-            .get();
-        final var slotId = scheduledSlot.map(BiddingSlot::getSlotId).get();
+            .map(Math::abs)
+            .orElse(TIME_GAP);
 
         if (endTimeGapWithCurrentTime < TIME_GAP) {
+            final var slotId = scheduledSlot.map(BiddingSlot::getSlotId).get();
+            System.out.println("Found one slot to close" + scheduledSlot.get().getSlotId());
+
             slotClosingTask.invoke(slotId);
             updateBiddingStatus(scheduledSlot.get(), COMPLETED);
         }

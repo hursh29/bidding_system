@@ -2,20 +2,29 @@ package com.intuit.bidding_system.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Data
-@Builder(setterPrefix = "buildWith")
 @Table(name = "products")
+@Builder(setterPrefix = "buildWith")
 public class Product {
 
     @Id
@@ -31,6 +40,7 @@ public class Product {
     @Column
     private String description;
 
+    @Enumerated(EnumType.STRING)
     @Column
     private Category category;
 

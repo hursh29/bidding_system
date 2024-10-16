@@ -116,15 +116,6 @@ public class BiddingService {
         if (bid.getStatus() != ACTIVE) {
             throw new InvalidBidException("No active slots are present, bidding not possible");
         }
-        final var lastHighestBidPrice =
-            Optional
-                .ofNullable(bidRepository.findFirstByProductSlotIdOrderByBidAmountDesc(productSlotId))
-                .map(Bid::getBidAmount)
-                .orElse(0.00);
-
-        if (Double.compare(productBidAmount,lastHighestBidPrice) < 0) {
-            throw new InvalidBidException("product price should be greater than previous bid price");
-        }
 
         final var productBasePrice =
             productService.findProductByProductSlotId(productSlotId)
@@ -133,6 +124,16 @@ public class BiddingService {
 
         if (Double.compare(productBidAmount, productBasePrice) < 0) {
             throw new InvalidBidException("product price cannot be less than bid price");
+        }
+
+        final var lastHighestBidPrice =
+            Optional
+                .ofNullable(bidRepository.findFirstByProductSlotIdOrderByBidAmountDesc(productSlotId))
+                .map(Bid::getBidAmount)
+                .orElse(0.00);
+
+        if (Double.compare(productBidAmount,lastHighestBidPrice) < 0) {
+            throw new InvalidBidException("product price should be greater than previous bid price");
         }
 
         final Bid persistBid = Bid.builder()

@@ -71,14 +71,16 @@ public class ProductService {
                 .buildWithCreatedAt(currentTime)
                 .buildWithUpdatedAt(currentTime)
                 .build();
+            final var persistedProductId = productRepository.save(productToBeSaved).getProductId();
+
             final var productSlot = ProductSlot.builder()
                 .buildWithUpdatedAt(currentTime)
+                .buildWithCreatedAt(currentTime)
                 .buildWithSlotId(slotId)
-                .buildWithUpdatedAt(currentTime)
+                .buildWithProductId(persistedProductId)
                 .buildWithStatus(AuctionStatus.OPEN)
                 .build();
 
-            productRepository.save(productToBeSaved);
             productSlotRepository.save(productSlot);
 
             return RegistrationResponse.builder()
