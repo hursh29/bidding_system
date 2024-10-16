@@ -34,7 +34,7 @@ public class SlotClosingTask implements Task<BidWinner> {
     @Autowired
     private ProductService productService;
 
-    // mark the product as gone in inventory
+    // mark the product as gone in inventory and creates the winner.
     private List<BidWinner> winnerEvaluationTask(final Long slotId) {
         final var productsFromTheSlot = productService.getAllProductSlotsBySlotId(slotId);
 
@@ -64,6 +64,7 @@ public class SlotClosingTask implements Task<BidWinner> {
         biddingService.closeOutSlotWindow(slotId);
         final List<BidWinner> bidWinners = winnerEvaluationTask(slotId);
         productService.closeAllProductSlotsBySlotId(slotId);
-        return winnerEvaluationTask(slotId);
+
+        return bidWinners;
     }
 }

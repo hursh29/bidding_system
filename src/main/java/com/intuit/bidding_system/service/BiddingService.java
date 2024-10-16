@@ -5,28 +5,31 @@ import com.intuit.bidding_system.entity.BiddingSlot;
 import com.intuit.bidding_system.entity.Product;
 import com.intuit.bidding_system.entity.ProductSlot;
 import com.intuit.bidding_system.entity.SlotStatus;
+import com.intuit.bidding_system.entity.User;
 import com.intuit.bidding_system.exceptions.InvalidBidException;
+import com.intuit.bidding_system.model.request.BidClaimRequest;
 import com.intuit.bidding_system.model.request.BiddingSlotRegistrationRequest;
+import com.intuit.bidding_system.model.response.BidSummaryResponse;
 import com.intuit.bidding_system.repository.BidRepository;
 import com.intuit.bidding_system.repository.BiddingSlotRepository;
-import lombok.Data;
+import com.intuit.bidding_system.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.intuit.bidding_system.entity.SlotStatus.ACTIVE;
 import static com.intuit.bidding_system.entity.SlotStatus.SCHEDULED;
-
-@Data
-class BidClaimRequest {
-    private Long productSlotId;
-    private Double bidAmount;
-    private Long userId;
-}
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toUnmodifiableMap;
 
 @Service
 public class BiddingService {
@@ -35,27 +38,22 @@ public class BiddingService {
     private ProductService productService;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private BiddingSlotRepository biddingSlotRepository;
 
     @Autowired
     private BidRepository bidRepository;
 
-    public boolean validateBiddingSlot(BiddingSlotRegistrationRequest req) {
-        // avoid overlap check if such request already exists
-        return true;
-    }
+//    public boolean validateBiddingSlot(BiddingSlotRegistrationRequest req) {
+//        // avoid overlap check if such request already exists
+//        return true;
+//    }
 
-    public boolean scheduleSlotWindow(BiddingSlotRegistrationRequest req) {
-        scheduleBiddingWindow(req);
-        scheduleBookingSlot();
-
-        return false;
-    }
-
-    private void scheduleBiddingWindow(BiddingSlotRegistrationRequest request) {
+    public boolean scheduleSlotWindow(BiddingSlotRegistrationRequest request) {
         final LocalDateTime currentTime = LocalDateTime.now();
         final BiddingSlot newSlot = BiddingSlot.builder()
-//            .buildWithSlotId(randomLong)
             .buildWithStartTime(request.getStartTime())
             .buildWithEndTime(request.getEndTime())
             .buildWithStatus(SCHEDULED)
@@ -63,10 +61,7 @@ public class BiddingService {
             .buildWithUpdatedAt(currentTime)
             .build();
         biddingSlotRepository.save(newSlot);
-    }
-
-    private void scheduleBookingSlot() {
-
+        return true;
     }
 
     public BiddingSlot closeOutSlotWindow(final Long slotId) {
@@ -148,5 +143,59 @@ public class BiddingService {
             .build();
 
         return bidRepository.save(persistBid);
+    }
+
+    public Map<Long, List<BidSummaryResponse>> getAllBids(Long slotId) {
+        return
+            productService.getAllProductSlotsBySlotId(slotId).stream()
+            .map(ProductSlot::getProductSlotId)
+            .flatMap(productSlotId -> {
+                final var bids = bidRepository.findAllByProductSlotId(productSlotId);
+                final var product = productService.findProductByProductSlotId(productSlotId).get();
+
+                return bids.stream()
+                    .map(bid -> {
+                        final var bidderId = bid.getBidderId();
+                        final var user = userRepository.findByUserId(bidderId).get();
+
+                        return BidSummaryResponse.builder()
+                            .userName(user.getUsername())
+                            .userId(bid.getBidderId())
+                            .productDescription(product.getDescription())
+                            .productId(product.getProductId())
+                            .biddingPrice(bid.getBidAmount())
+                            .productName(product.getName())
+                            .build();
+                    });
+            })
+            .sorted(Comparator.comparing(BidSummaryResponse::getBiddingPrice))
+            .collect(groupingBy(BidSummaryResponse::getProductId));
+    }
+
+    public Map<Long, BidSummaryResponse> getWinners(Long slotId) {
+        return
+            productService.getAllProductSlotsBySlotId(slotId).stream()
+                .map(ProductSlot::getProductSlotId)
+                .map(productSlotId -> {
+                    final var highestBid = bidRepository.findFirstByProductSlotIdOrderByBidAmountDesc(productSlotId);
+                    if (highestBid == null) {
+                        return null;
+                    }
+
+                    final var bidderId = highestBid.getBidderId();
+                    final var product = productService.findProductByProductSlotId(productSlotId).get();
+                    final var user = userRepository.findByUserId(bidderId).get();
+
+                    return BidSummaryResponse.builder()
+                        .userName(user.getUsername())
+                        .userId(highestBid.getBidderId())
+                        .productDescription(product.getDescription())
+                        .productId(product.getProductId())
+                        .biddingPrice(highestBid.getBidAmount())
+                        .productName(product.getName())
+                        .build();
+                })
+                .filter(Objects::nonNull)
+                .collect(toUnmodifiableMap(BidSummaryResponse::getProductId, Function.identity()));
     }
 }

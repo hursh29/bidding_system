@@ -11,7 +11,6 @@ import com.intuit.bidding_system.model.response.RegistrationResponse;
 import com.intuit.bidding_system.repository.BiddingSlotRepository;
 import com.intuit.bidding_system.repository.ProductRepository;
 import com.intuit.bidding_system.repository.ProductSlotRepository;
-import com.intuit.bidding_system.repository.UserRepository;
 import jakarta.persistence.OptimisticLockException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.intuit.bidding_system.entity.SlotStatus.SCHEDULED;
-import static com.intuit.bidding_system.entity.UserRole.VENDOR;
 
 @Service
 public class ProductService {
@@ -104,13 +102,13 @@ public class ProductService {
         return productSlotRepository.findById(productSlotId);
     }
 
-    public Product markProductAsSold(final Long productId) throws ProductNotFoundException {
+    public void markProductAsSold(final Long productId) throws ProductNotFoundException {
         final var product = productRepository.findByProductId(productId)
             .orElseThrow(() -> new ProductNotFoundException("Product is not available in the inventory"));
         product.setIsActive(false);
         product.setUpdatedAt(LocalDateTime.now());
 
-        return productRepository.save(product);
+        productRepository.save(product);
     }
 
     public void closeAllProductSlotsBySlotId(final Long slotId) {
