@@ -15,7 +15,7 @@
     "category": "SPORTS",
     "basePrice": 250.00,
     "isActive":  true,
-    "slotId": 1
+    "slotId": 10
   },
   {
     "vendorId": 2,

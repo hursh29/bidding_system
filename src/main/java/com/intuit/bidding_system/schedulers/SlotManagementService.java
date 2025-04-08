@@ -43,7 +43,7 @@ public class SlotManagementService {
 
         if (startTimeGapWithCurrentTime < TIME_GAP) {
             final var slotId = scheduledSlot.map(BiddingSlot::getSlotId).get();
-            System.out.println("Found one slot to open" + scheduledSlot.get().getSlotId());
+            System.out.println("Found one slot to open, id = " + scheduledSlot.get().getSlotId());
             updateBiddingStatus(scheduledSlot.get(), ACTIVE);
 
             slotStartTask.invoke(slotId);
@@ -62,7 +62,7 @@ public class SlotManagementService {
 
         if (endTimeGapWithCurrentTime < TIME_GAP) {
             final var slotId = scheduledSlot.map(BiddingSlot::getSlotId).get();
-            System.out.println("Found one slot to close" + scheduledSlot.get().getSlotId());
+            System.out.println("Found one slot to close, id = " + scheduledSlot.get().getSlotId());
 
             slotClosingTask.invoke(slotId);
             updateBiddingStatus(scheduledSlot.get(), COMPLETED);

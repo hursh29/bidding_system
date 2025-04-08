@@ -8,6 +8,8 @@ import com.intuit.bidding_system.model.response.BidSummaryResponse;
 import com.intuit.bidding_system.model.response.RegistrationResponse;
 import com.intuit.bidding_system.service.BiddingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
