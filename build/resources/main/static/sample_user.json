@@ -1,0 +1,44 @@
+[
+  {
+    "username":  "Hursh Singh",
+    "email": "hursh_singh@gmail.com",
+    "phoneNumber": "12378174",
+    "role": "ADMIN",
+    "address": "south california"
+  },
+  {
+    "username":  "Robert Packwood",
+    "email": "robert_packwood@gmail.com",
+    "phoneNumber": "92378174",
+    "role": "VENDOR",
+    "address": "new jersey"
+  },
+  {
+    "username":  "Paulo Cohleo",
+    "email": "paul@gmail.com",
+    "phoneNumber": "92378174",
+    "role": "VENDOR",
+    "address": "sydney"
+  },
+  {
+    "username":  "Tony Stark",
+    "email": "tony_stark@gmail.com",
+    "phoneNumber": "2378174",
+    "role": "BUYER",
+    "address": "california west"
+  },
+  {
+    "username": "Chris Evans",
+    "email": "chris_evans@gmail.com",
+    "phoneNumber": "1223174",
+    "role": "BUYER",
+    "address": "queens"
+  },
+  {
+    "username":  "Michael Hemsworth",
+    "email": "michael_hemsworth@gmail.com",
+    "phoneNumber": "92378174",
+    "role": "BUYER",
+    "address": "san diego"
+  }
+]
